@@ -1,7 +1,13 @@
-from image import *
-from screen import ScreenshotClient
-from gpt import GPTClient
+from src.image import *
+from src.gpt import GPTClient
 import time
+import src.bot
+
+# so testing on mac works
+try:
+    from src.screen import ScreenshotClient
+except ImportError:
+    from src.screen_mac import ScreenshotClient
 
 client = ScreenshotClient()
 gpt = GPTClient()
@@ -15,5 +21,6 @@ base64 = b64_encode(im)
 
 response = gpt.prompt(base64)
 print(response)
+gpt.audio_prompt(response)
 
 client.cleanup()

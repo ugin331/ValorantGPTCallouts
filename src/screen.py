@@ -3,25 +3,28 @@ import win32gui
 import win32ui
 import mss
 
+
 def list_windows():
     def callback(hwnd, _):
         if win32gui.IsWindowVisible(hwnd):
             title = win32gui.GetWindowText(hwnd)
             class_name = win32gui.GetClassName(hwnd)
             print(f"Handle: {hex(hwnd)}, Title: {title}, Class: {class_name}")
+
     win32gui.EnumWindows(callback, None)
+
 
 class ScreenshotClient:
     def __init__(self):
-        self.tgt = win32gui.FindWindow('VALORANTUnrealWindow', None)
+        self.tgt = win32gui.FindWindow("VALORANTUnrealWindow", None)
         # self.tgt = win32gui.FindWindow(None, 'Task Manager')
-        if(self.tgt == 0):
-            raise RuntimeError('fuck')
+        if self.tgt == 0:
+            raise RuntimeError("Can't find target window")
         windll.user32.SetProcessDPIAware()
-        
+
         self.left, self.top, self.right, self.bot = win32gui.GetWindowRect(self.tgt)
-        self.width = self.right-self.left
-        self.height = self.bot-self.top
+        self.width = self.right - self.left
+        self.height = self.bot - self.top
 
         self.sct = mss.mss()
 
@@ -45,12 +48,12 @@ class ScreenshotClient:
         bmpinfo = self.bitmap.GetInfo()
         bmpstr = self.bitmap.GetBitmapBits(True)
         return bmpinfo, bmpstr
-    
+
     def mss_capture(self):
         bbox = (self.left, self.top, self.right, self.bot)
         im = self.sct.grab(bbox)
         return im
-    
+
     def cleanup(self):
         self.sct.close()
 
@@ -62,4 +65,3 @@ class ScreenshotClient:
         #     self.saveDC.DeleteDC()
         #     self.mfcDC.DeleteDC()
         #     win32gui.ReleaseDC(self.tgt, self.tgtDC)
-

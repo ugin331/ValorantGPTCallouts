@@ -1,0 +1,14 @@
+[project]
+name = "valorantgptcallouts"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "audioop-lts>=0.2.1",
+    "mss>=10.0.0",
+    "openai>=1.78.0",
+    "pillow>=11.2.1",
+    "py-cord>=2.6.1",
+    "pynacl>=1.5.0",
+]
