@@ -154,3 +154,6 @@ cython_debug/
 credentials.py
 *.jpg
 *.png
+*.wav
+*.opus
+*.pcm
