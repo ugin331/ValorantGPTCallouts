@@ -1,2 +1,3 @@
 # ValorantGPTCallouts
  
+i dunno really.
