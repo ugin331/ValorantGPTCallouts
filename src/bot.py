@@ -1,7 +1,7 @@
+import asyncio
 import discord
 import credentials
-import time
-from .image import sct_to_PIL, save_PIL_to_disk, b64_encode
+from .image import *
 from .gpt import GPTClient
 
 try:
@@ -10,6 +10,8 @@ except ImportError:
     from src.screen_mac import ScreenshotClient
 
 bot = discord.Bot()
+screenshotter = ScreenshotClient()
+gpt = GPTClient()
 
 
 @bot.event
@@ -19,11 +21,16 @@ async def on_ready():
 
 @bot.slash_command(name="igl", description="Invite bot to a voice call")
 async def igl(ctx: discord.ApplicationContext, channel: discord.VoiceChannel):
-    client = await channel.connect()
-    screenshotter = ScreenshotClient()
-    gpt = GPTClient()
-    await ctx.respond("Joined!")
+    old_vc = discord.utils.get(bot.voice_clients, guild=ctx.guild)
+    if old_vc:
+        old_vc.cleanup()
 
+    client = await channel.connect(reconnect=False)
+    await ctx.respond("Joined!")
+    await ask_gpt(client)
+
+
+async def ask_gpt(client: discord.VoiceClient):
     while client.is_connected():
         capture = screenshotter.mss_capture()
         im = sct_to_PIL(capture)
@@ -37,9 +44,8 @@ async def igl(ctx: discord.ApplicationContext, channel: discord.VoiceChannel):
 
         audio = discord.FFmpegOpusAudio("audio.wav")
         await client.play(audio, wait_finish=True)
-        time.sleep(15)
-
-    screenshotter.cleanup()
+        audio.cleanup()
+        await asyncio.sleep(30)
 
 
 def run():

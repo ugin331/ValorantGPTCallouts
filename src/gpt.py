@@ -46,6 +46,6 @@ class GPTClient:
             voice="coral",
             input=text,
             instructions="You are a professional esports player for the first person shooter VALORANT. You are your team's In Game Leader (IGL), so make sure to speak with clarity, confidence, and authority.",
-            speed=3,
+            speed=2,
         ) as response:
             response.stream_to_file("audio.wav")
