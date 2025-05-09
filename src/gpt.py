@@ -35,7 +35,7 @@ class GPTClient:
             messages=message,
             max_completion_tokens=150,
         )
-        print(response)
+        # print(response)
 
         response_msg = response.choices[0].message.content
         return response_msg
@@ -46,6 +46,6 @@ class GPTClient:
             voice="coral",
             input=text,
             instructions="You are a professional esports player for the first person shooter VALORANT. You are your team's In Game Leader (IGL), so make sure to speak with clarity, confidence, and authority.",
-            response_format="pcm",
+            speed=3,
         ) as response:
-            response.stream_to_file("audio.pcm")
+            response.stream_to_file("audio.wav")
