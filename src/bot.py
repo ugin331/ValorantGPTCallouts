@@ -3,11 +3,8 @@ import discord
 import credentials
 from .image import *
 from .gpt import GPTClient
+from .screen_mac import ScreenshotClient
 
-try:
-    from src.screen import ScreenshotClient
-except ImportError:
-    from src.screen_mac import ScreenshotClient
 
 bot = discord.Bot()
 screenshotter = ScreenshotClient()
@@ -38,9 +35,11 @@ async def ask_gpt(client: discord.VoiceClient):
         b64 = b64_encode(im)
 
         gpt_response = gpt.prompt(b64)
-        print(gpt_response)
+        if not gpt_response.is_valorant:
+            await asyncio.sleep(5)
+            continue
 
-        gpt.audio_prompt(gpt_response)
+        gpt.audio_prompt(gpt_response.instructions)
 
         audio = discord.FFmpegOpusAudio("audio.wav")
         await client.play(audio, wait_finish=True)

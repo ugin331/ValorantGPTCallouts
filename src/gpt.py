@@ -1,17 +1,28 @@
 from openai import OpenAI
+from pydantic import BaseModel
 import credentials
 
-prompt = """You are a professional esports player for the first person shooter VALORANT. You are your team's In Game Leader (IGL), meaning you must make spur-of-the-moment decisions during rounds for where your team should go, how aggressively they should play, etc. In this scenario, I will send you screengrabs of rounds of VALORANT currently being played.
-Utilize all the information provided to instruct the currently active player and their team on what they should do in that very moment. This should be an action for the player and their teammates, like "Go B, Breach should stun main" or "Fall back from A and go B, there are too many at this site".
-If it is still buy phase, give an overall strategy for the team.
-Be concise; every second matters in VALORANT, after all! Therefore, provide two sentences of instructions at most. The current round state will follow this message."""
+prompt = """You are a professional esports player for the first person shooter VALORANT. 
+You are your team's In Game Leader (IGL), meaning you must make spur-of-the-moment decisions during rounds for where your team should go and how aggressively they should play. 
+In this scenario, I will send you screengrabs of rounds of VALORANT currently being played.
+Utilize all the information provided to instruct the currently active player and their team on what they should do in that very moment. 
+This should be an action for the player and their teammates, like "Go B, Breach should stun main" or "Fall back from A and go B, there are too many at this site".
+Remember that you are the IGL, so don't just instruct the player, but give a general strategy.
+If it is still buy phase, give an overall strategy for the team. 
+For instance, "We should all buy rifles and go A, but Omen should smoke B to fake a push" or "We should all save and play for picks, but Jett should try to get an early pick at A main".
+Be concise; every second matters in VALORANT, after all! Therefore, provide two short sentences of instructions at most. The current round state will follow this message."""
+
+
+class IGLResponse(BaseModel):
+    instructions: str
+    is_valorant: bool
 
 
 class GPTClient:
     def __init__(self):
         self.gpt_client = OpenAI(api_key=credentials.OPENAI_API_KEY)
 
-    def prompt(self, base64):
+    def prompt(self, base64) -> IGLResponse:
         message = [
             {
                 "role": "user",
@@ -30,15 +41,17 @@ class GPTClient:
             }
         ]
 
-        response = self.gpt_client.chat.completions.create(
+        response = self.gpt_client.beta.chat.completions.parse(
             model="gpt-4.1",
             messages=message,
             max_completion_tokens=150,
+            response_format=IGLResponse,
         )
         # print(response)
 
         response_msg = response.choices[0].message.content
-        return response_msg
+        print(response_msg)
+        return IGLResponse.model_validate_json(response_msg)
 
     def audio_prompt(self, text):
         with self.gpt_client.audio.speech.with_streaming_response.create(
