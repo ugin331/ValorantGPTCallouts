@@ -10,12 +10,14 @@ def bitmap_to_PIL(bmpinfo, bmpstr):
     im_small = im.resize(
         (bmpinfo["bmWidth"] // 2, bmpinfo["bmHeight"] // 2), Image.LANCZOS
     )
+    im.close()
     return im_small
 
 
 def sct_to_PIL(cap):
     im = Image.frombytes("RGB", cap.size, cap.rgb)
     im_small = im.resize((cap.width // 2, cap.height // 2), Image.LANCZOS)
+    im.close()
     return im_small
 
 

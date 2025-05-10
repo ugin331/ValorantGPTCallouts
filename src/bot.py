@@ -22,7 +22,7 @@ async def igl(ctx: discord.ApplicationContext, channel: discord.VoiceChannel):
     if old_vc:
         old_vc.cleanup()
 
-    client = await channel.connect(reconnect=False)
+    client = await channel.connect(reconnect=True)
     await ctx.respond("Joined!")
     await ask_gpt(client)
 
@@ -33,6 +33,8 @@ async def ask_gpt(client: discord.VoiceClient):
         im = sct_to_PIL(capture)
         save_PIL_to_disk(im)
         b64 = b64_encode(im)
+        im.close()
+        print('image captured')
 
         gpt_response = gpt.prompt(b64)
         if not gpt_response.is_valorant:
@@ -42,9 +44,13 @@ async def ask_gpt(client: discord.VoiceClient):
         gpt.audio_prompt(gpt_response.instructions)
 
         audio = discord.FFmpegOpusAudio("audio.wav")
+        print(client.is_playing())
         await client.play(audio, wait_finish=True)
+        print('audio played')
         audio.cleanup()
         await asyncio.sleep(20)
+        print('sleep finished')
+    print('bot disconnected')
 
 
 def run():
