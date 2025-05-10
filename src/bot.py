@@ -44,7 +44,7 @@ async def ask_gpt(client: discord.VoiceClient):
         audio = discord.FFmpegOpusAudio("audio.wav")
         await client.play(audio, wait_finish=True)
         audio.cleanup()
-        await asyncio.sleep(30)
+        await asyncio.sleep(20)
 
 
 def run():
