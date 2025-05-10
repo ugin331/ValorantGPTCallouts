@@ -1,6 +1,5 @@
 from ctypes import windll
 import win32gui
-import win32ui
 import mss
 
 
